@@ -1,15 +1,15 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const imgBoard = document.getElementById('board');
-const imgUnicorn = document.getElementById('https://emojipedia-us.s3.amazonaws.com/thumbs/160/apple/33/unicorn-face_1f984.png');
-const imgHorse = document.getElementById('https://www.emojibase.com/resources/img/emojis/apple/x1f434.png.pagespeed.ic.kPO2Ua1ZTt.png');
+const imgX = [document.getElementById('X')];
+const imgO = [document.getElementById('O')];
 
 const rand = function(num) {
     return Math.floor(Math.random() * num) + 1;
 };
 
 canvas.addEventListener('click', function(evt) {
-     if (isGameOver) {
+   if (isGameOver) {
         return;
     }
     const i = Math.floor(evt.offsetY * 3 / canvas.height);
@@ -39,58 +39,57 @@ const update = function() {
         return;
     }
 }
-
-const Win = function(board, char) {
-    let hCharsNum = 0, vCharsNum = 0, hEmpetyCell = -1, vEmpetyCell = -1;
-    let d1CharsNum = 0, d2CharsNum = 0,d1EmpetyCell = -1, d2EmpetyCell = -1;
+const win = function(board, char) {
+    let hCharNum = 0, vCharNum = 0, hEmptyCell = -1, vEmptyCell = -1;
+    let d1CharNum = 0, d2CharNum = 0, d1EmptyCell = -1, d2EmptyCell = -1;
 
     for (let i = 0; i < 3; i+=1) {
-        hCharsNum = 0;
-        vCharsNum = 0;
-        hEmpetyCell = -1;
-        vEmpetyCell = -1;
+        hCharNum = 0;
+        vCharNum = 0;
+        hEmptyCell = -1;
+        vEmptyCell = -1;
 
         if (board[i][i] === char) {
-            d1CharsNum+=1;
+            d1CharNum+=1;
         } else if (board[i][i] === ' ') {
-           d1EmpetyCell = i;
+            d1EmptyCell = i;
         }
 
         if (board[i][3 - i - 1] === char) {
-            d2CharsNum+=1;
+            d2CharNum+=1;
         } else if (board[i][3 - i - 1] === ' ') {
-            d2EmpetyCell = i;
+            d2EmptyCell = i;
         }
 
         for (let j = 0; j < 3; j+=1) {
             if (board[i][j] === char) {
-                hCharsNum+=1;
+                hCharNum+=1;
             } else if (board[i][j] === ' ') {
-                hEmpetyCell = j;
+                hEmptyCell = j;
             }
 
             if (board[j][i] === char) {
-                vCharsNum+=1;
+                vCharNum+=1;
             } else if (board[j][i] === ' ') {
-                vEmpetyCell = j;
+                vEmptyCell = j;
             }
         }
 
-        if (hCharsNum === 3 - 1 && hEmpetyCell !== -1) {
-            return [i, hEmpetyCell];
+        if (hCharNum === 3 - 1 && hEmptyCell !== -1) {
+            return [i, hEmptyCell];
         }
 
-        if (vCharsNum === 3 - 1 && vEmpetyCell !== -1) {
-            return [vEmpetyCell, i];
+        if (vCharNum === 3 - 1 && vEmptyCell !== -1) {
+            return [vEmptyCell, i];
         }
     }
 
-    if (d1CharsNum === 3 - 1 &&d1EmpetyCell !== -1) {
-        return [diagonal1EmptyIndex,d1EmpetyCell];
+    if (d1CharNum === 3 - 1 && d1EmptyCell !== -1) {
+        return [d1EmptyCell, d1EmptyCell];
     }
 
-    if (d2CharsNum === 3 - 1 && d2EmpetyCell !== -1) {
-        return [d2EmpetyCell, 3 - d2EmpetyCell - 1];
+    if (d2CharNum === 3 - 1 && d2EmptyCell !== -1) {
+        return [d2EmptyCell, 3 - d2EmptyCell - 1];
     }
     return null;
 };
@@ -107,24 +106,24 @@ const isFull = function(board) {
 };
 
 const findWinner = function(board) {
-    const xWinningLine = findWinLine(board, 'unicorn');
+    const xWinningLine = findWinLine(board, 'X');
     if (xWinningLine) {
         return {
-            winner: 'unicorn',
+            winner: 'X',
             winningLocations: xWinningLine
         }
     }
-    const oWinningLine = findWinLine(board, 'horse');
+    const oWinningLine = findWinLine(board, 'O');
     if (oWinningLine) {
         return {
-            winner: 'horse',
+            winner: 'O',
             winningLocations: oWinningLine
         }
     }
 
     if (isFull(board)) {
         return {
-            winner: 'tie'
+            winner: 'Tie'
         }
     }
 
@@ -132,51 +131,51 @@ const findWinner = function(board) {
 };
 
 const findWinLine = function(board, char) {
-    let hCharsNum = 0, vCharsNum = 0, hLine = [], vLine = [];
-    let d1CharsNum = 0, d2CharsNum = 0, d1Line = [], d2Line = [];
+    let hCharNum = 0, vCharNum = 0, hLine = [], vLine = [];
+    let d1CharNum = 0, d2CharNum = 0, d1Line = [], d2Line = [];
 
     for (let i = 0; i < 3; i+=1) {
-        hCharsNum = 0;
-        vCharsNum = 0;
+        hCharNum = 0;
+        vCharNum = 0;
         hLine.length = 0;
         vLine.length = 0;
 
         if (board[i][i] === char) {
-            d1CharsNum+=1;
+            d1CharNum+=1;
         }
         d1Line.push([i, i]);
 
         if (board[i][3 - i - 1] === char) {
-            d2CharsNum+=1;
+            d2CharNum+=1;
         }
         d2Line.push([i, 3 - i - 1]);
 
         for (let j = 0; j < 3; j+=1) {
             if (board[i][j] === char) {
-                hCharsNum+=1;
+                hCharNum+=1;
             }
             hLine.push([i, j]);
 
             if (board[j][i] === char) {
-                vCharsNum+=1;
+                vCharNum+=1;
             }
             vLine.push([j, i]);
         }
 
-        if (hCharsNum === 3) {
+        if (hCharNum === 3) {
             return hLine;
         }
 
-        if (vCharsNum === 3) {
+        if (vCharNum === 3) {
             return vLine;
         }
     }
 
-    if (d1CharsNum === 3) {
+    if (d1CharNum === 3) {
         return d1Line;
     }
 
-    if (d2CharsNum === 3) {
+    if (d2CharNum === 3) {
         return d2Line;
     }
     return null;
@@ -189,8 +188,8 @@ const getFork = function(board, char) {
         for (let j = 0; j < 3; j+=1) {
             position = [i, j];
             if (board[i][j] === ' ') {
-                let lines = posLines(board, position);
-                if (forkOccures(lines, position, char, 3)) {
+                let lines = posLine(board, position);
+                if (forkOccur(lines, position, char, 3)) {
                     return position;
                 }
             }
@@ -199,8 +198,8 @@ const getFork = function(board, char) {
     return null;
 };
 
-const forkOccures = function(lines, position, char) {
-    let forkLineNum= 0;
+const forkOccur = function(lines, position, char) {
+    let forkLineNum = 0;
     let charNum;
 
     for (let i = 0; i < lines.length; i+=1) {
@@ -216,14 +215,14 @@ const forkOccures = function(lines, position, char) {
         }
 
         if (charNum === 3 - 2) {
-            forkLinesNum+=1;
+            forkLineNum+=1;
         }
     }
 
-    return forkLineNum> 1;
+    return forkLineNum > 1;
 };
 
-const posLines = function(board, position) {
+const posLine = function(board, position) {
     const lines = [];
     const hLine = [];
     const vLine = [];
@@ -231,8 +230,8 @@ const posLines = function(board, position) {
     const d2Line = [];
     const row = position[0];
     const col = position[1];
-    const ond1 = row === col;
-    const ond2 = row === 3 - col - 1;
+    const onD1 = row === col;
+    const onD2 = row === 3 - col - 1;
 
     for (let i = 0; i < 3; i+=1) {
         hLine.push([board[row][i]]);
@@ -243,16 +242,16 @@ const posLines = function(board, position) {
 
     lines.push(hLine);
     lines.push(vLine);
-    if (ond1) {
+    if (onD1) {
         lines.push(d1Line);
     }
-    if (ond2) {
+    if (onD2) {
         lines.push(d2Line);
     }
     return lines;
 };
 
-const OppositeCorner= function(board, char) {
+const oppositeCorner = function(board, char) {
     if (board[0][0] === char && board[3 - 1][3 - 1] === ' ') {
         return [3 - 1, 3 - 1];
     }
@@ -296,21 +295,21 @@ const firstEmpty = function(board) {
 };
 
 const nextMove = function(board, isX) {
-    const player1Char = isX ? 'unicorn' : 'horse';
-    const player2Char = isX ? 'horse' : 'unicorn';
-    const winning = Win(board, player1Char);
+    const player1 = isX ? 'X' : 'O';
+    const player2 = isX ? 'O' : 'X';
+    const winning = win(board, player1);
     if (winning) {
         return winning;
     }
-    const losing = Win(board, player2Char);
+    const losing = win(board, player2);
     if (losing) {
         return losing;
     }
-    const winningFork = getFork(board, player1Char);
+    const winningFork = getFork(board, player1);
     if (winningFork) {
         return winningFork;
     }
-    const losingFork = getFork(board, player2Char);
+    const losingFork = getFork(board, player2);
     if (losingFork) {
         return losingFork;
     }
@@ -318,9 +317,9 @@ const nextMove = function(board, isX) {
     if (board[midIndex][midIndex] === ' ') {
         return [midIndex, midIndex];
     }
-    const OppCorner = OppositeCorner(board, player2Char);
-    if (OppCorner) {
-        return OppCorner;
+    const oppCorner = oppositeCorner(board, player2);
+    if (oppCorner) {
+        return oppCorner;
     }
     const corner = emptyCorner(board);
     if (corner) {
@@ -333,7 +332,7 @@ const makeMove = function(board, position, isX) {
     if (board[position[0]][position[1]] !== ' ') {
         return -1;
     }
-    board[position[0]][position[1]] = isX ? 'unicorn' : 'horse';
+    board[position[0]][position[1]] = isX ? 'X' : 'O';
     isX = !isX;
     return 0;
 };
@@ -368,7 +367,7 @@ const printBoard = function() {
 };
 
 const drawBoard = function(board) {
-    const lineWidth = 0;
+    const lineWidth = 10;
     ctx.lineWidth = lineWidth;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -390,10 +389,10 @@ const drawBoard = function(board) {
     let img;
     for (let i = 0; i < 3; i+=1) {
         for (let j = 0; j < 3; j+=1) {
-            if (board[i][j] === 'unicorn') {
-                img = imgUnicorn[rand(3) - 1];
-            } else if (board[i][j] === 'horse') {
-                img = imgHorse[rand(3) - 1];
+            if (board[i][j] === 'X') {
+                img = imgX[rand(3) - 1];
+            } else if (board[i][j] === 'O') {
+                img = imgO[rand(3) - 1];
             } else {
                 continue;
             }
@@ -413,8 +412,8 @@ const startNewGame = function() {
         }
     }
 
-    var e = document.getElementById("player1Char");
-    isX = e.options[e.selectedIndex].value === 'unicorn';
+    var e = document.getElementById("player1");
+    isX = e.options[e.selectedIndex].value === 'X';
     isGameOver = false;
     if (! isX) {
         let m = nextMove(board, true);
