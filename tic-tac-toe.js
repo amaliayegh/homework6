@@ -370,10 +370,8 @@ const printBoard = function() {
 const drawBoard = function(board) {
     const lineWidth = 0;
     ctx.lineWidth = lineWidth;
-    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw horizontal and vertical lines
     for (let i = 0; i < 3 - 1; i+=1) {
         let x = (i + 1) * canvas.width / 3 - lineWidth / 2;
 
